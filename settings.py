@@ -25,7 +25,7 @@ class Settings():
         self.fleet_direction = 1
 
         # stars settings
-        self.star_speed_factor = 1
+        # self.star_speed_factor = 1
 
 
 

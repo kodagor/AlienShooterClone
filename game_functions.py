@@ -1,7 +1,7 @@
 import sys
 import pygame
-from random import randint
-from stars import Star
+# from random import randint
+# from stars import Star
 from alien import Alien
 from bullet import Bullet
 
@@ -55,7 +55,6 @@ def update_screen(ai_settings, screen, stars, ship, aliens, bullets):
     for bullet in bullets.sprites():
         bullet.draw_bullet()
 
-
     ship.blitme()
     aliens.draw(screen)
 
@@ -63,8 +62,8 @@ def update_screen(ai_settings, screen, stars, ship, aliens, bullets):
     pygame.display.flip()
 
 
-def update_bullets(bullets):
-    """update bullets pos and removing these outsiee the screen"""
+def update_bullets(ai_settings, screen, ship, aliens, bullets):
+    """update bullets pos and removing these outside the screen"""
 
     # update bullet pos
     bullets.update()
@@ -73,7 +72,19 @@ def update_bullets(bullets):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    # print(len(bullets))
+    # print(len(bullets))   # check in console if bullets are disappear correctly
+    check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets)
+
+
+def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
+    """reaction to collision between alien and bullet"""
+    # removing aliens and bullets if collision was happen
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+
+    if len(aliens) == 0:
+        # remove remaining bullets and create new fleet
+        bullets.empty()
+        create_fleet(ai_settings, screen, ship, aliens)
 
 
 def fire_bullets(ai_settings, screen, ship, bullets):
@@ -145,66 +156,66 @@ def update_aliens(ai_settings, aliens):
     aliens.update()
 
 
-def get_number_stars_x(ai_settings, star_width):
-    """number of stars in one row"""
-    available_space_x = ai_settings.screen_width - star_width
-    number_stars_x = int(available_space_x / star_width)
-    return number_stars_x
+# def get_number_stars_x(ai_settings, star_width):
+#     """number of stars in one row"""
+#     available_space_x = ai_settings.screen_width - star_width
+#     number_stars_x = int(available_space_x / star_width)
+#     return number_stars_x
+#
+#
+# def create_star(ai_settings, screen, stars, star_number, row_number):
+#     """creating a star and put in the row"""
+#     random_num = randint(-20, 100)
+#     star = Star(ai_settings, screen)
+#     star_width = star.rect.width
+#     star.x = star_width + random_num * star_width * star_number
+#     star.rect.x = star.x
+#     star.rect.y = star.rect.height + random_num * star.rect.height * row_number
+#     stars.add(star)
+#
+#
+# def create_stars(ai_settings, screen, stars):
+#     """creating many stars"""
+#     # creating a star like the alien
+#     star = Star(ai_settings, screen)
+#     number_stars_x = get_number_stars_x(ai_settings, star.rect.width)
+#     number_rows = get_number_rows_stars(ai_settings, star.rect.height)
+#
+#     # stars rows
+#     for row_number in range(number_rows):
+#         for star_number in range(number_stars_x):
+#             # create a star and put in the row
+#             create_star(ai_settings, screen, stars, star_number, row_number)
+#
+#
+# def get_number_rows_stars(ai_settings, star_height):
+#     """creating rows that fill entire screen"""
+#     available_space_y = ai_settings.screen_height
+#     number_rows = int(available_space_y / (2 * star_height))
+#     return number_rows
 
 
-def create_star(ai_settings, screen, stars, star_number, row_number):
-    """creating a star and put in the row"""
-    random_num = randint(-20, 100)
-    star = Star(ai_settings, screen)
-    star_width = star.rect.width
-    star.x = star_width + random_num * star_width * star_number
-    star.rect.x = star.x
-    star.rect.y = star.rect.height + random_num * star.rect.height * row_number
-    stars.add(star)
+# def stars_down(ai_settings, stars):
+#     """move down the stars"""
+#     for star in stars.sprites():
+#         star.rect.y += ai_settings.star_speed_factor
 
 
-def create_stars(ai_settings, screen, stars):
-    """creating many stars"""
-    # creating a star like the alien
-    star = Star(ai_settings, screen)
-    number_stars_x = get_number_stars_x(ai_settings, star.rect.width)
-    number_rows = get_number_rows_stars(ai_settings, star.rect.height)
-
-    # stars rows
-    for row_number in range(number_rows):
-        for star_number in range(number_stars_x):
-            # create a star and put in the row
-            create_star(ai_settings, screen, stars, star_number, row_number)
+# def check_star_edge(ai_settings, screen, stars, row_number):
+#     """reaction after reaching screen edge"""
+#     star = Star(ai_settings, screen)
+#     number_stars_x = get_number_stars_x(ai_settings, star.rect.width)
+#
+#     for star in stars.sprites():
+#         if star.check_edge():
+#             for star_number in range(number_stars_x):
+#                 # create a star and put in the row
+#                 create_star(ai_settings, screen, stars, star_number, row_number)
 
 
-def get_number_rows_stars(ai_settings, star_height):
-    """creating rows that fill entire screen"""
-    available_space_y = ai_settings.screen_height
-    number_rows = int(available_space_y / (2 * star_height))
-    return number_rows
-
-
-def stars_down(ai_settings, stars):
-    """move down the stars"""
-    for star in stars.sprites():
-        star.rect.y += ai_settings.star_speed_factor
-
-
-def check_star_edge(ai_settings, screen, stars, row_number):
-    """reaction after reaching screen edge"""
-    star = Star(ai_settings, screen)
-    number_stars_x = get_number_stars_x(ai_settings, star.rect.width)
-
-    for star in stars.sprites():
-        if star.check_edge():
-            for star_number in range(number_stars_x):
-                # create a star and put in the row
-                create_star(ai_settings, screen, stars, star_number, row_number)
-
-
-def update_stars(ai_settings, screen, stars):
-    """update stars pos"""
-    stars_down(ai_settings, stars)
-    # check_star_edge(ai_settings, screen, stars, row_number=1)
-    stars.update()
+# def update_stars(stars):
+#     """update stars pos"""
+#     # stars_down(ai_settings, stars)
+#     # check_star_edge(ai_settings, screen, stars, row_number=1)
+#     stars.update()
 
